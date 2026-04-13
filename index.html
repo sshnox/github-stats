@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevScope — GitHub Stats Viewer</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="app" id="app">
+
+    <!-- ── Hero search area ── -->
+    <section class="hero" id="hero">
+      <div class="hero__inner">
+        <div class="hero__brand">
+          <svg class="hero__logo" width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <rect x="2" y="2" width="32" height="32" rx="10" fill="var(--orange)" opacity=".12"/>
+            <rect x="2" y="2" width="32" height="32" rx="10" stroke="var(--orange)" stroke-width="1.5"/>
+            <circle cx="18" cy="14" r="4" stroke="var(--orange)" stroke-width="1.5"/>
+            <path d="M10 28c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="var(--orange)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <div>
+            <h1 class="hero__title">DevScope</h1>
+            <p class="hero__sub">GitHub Profile Analytics</p>
+          </div>
+        </div>
+
+        <form class="search-form" id="searchForm" role="search">
+          <div class="search-wrap">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M12.5 12.5l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input
+              type="text"
+              class="search-input"
+              id="searchInput"
+              placeholder="Enter GitHub username…"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+              aria-label="GitHub username"
+            />
+            <button type="submit" class="search-btn" id="searchBtn">
+              <span class="search-btn__text">Analyze</span>
+              <svg class="search-btn__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <p class="search-hint">
+            Try:
+            <button type="button" class="hint-chip" data-user="torvalds">torvalds</button>
+            <button type="button" class="hint-chip" data-user="gaearon">gaearon</button>
+            <button type="button" class="hint-chip" data-user="sindresorhus">sindresorhus</button>
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Loading state ── -->
+    <div class="loader" id="loader" aria-hidden="true" style="display:none">
+      <div class="loader__track">
+        <div class="loader__bar" id="loaderBar"></div>
+      </div>
+      <p class="loader__text" id="loaderText">Fetching profile…</p>
+    </div>
+
+    <!-- ── Error state ── -->
+    <div class="error-banner" id="errorBanner" style="display:none" role="alert">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6v4M10 13.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span id="errorMsg">Something went wrong.</span>
+      <button class="error-dismiss" id="errorDismiss" aria-label="Dismiss">✕</button>
+    </div>
+
+    <!-- ── Dashboard ── -->
+    <div class="dashboard" id="dashboard" style="display:none" aria-live="polite">
+
+      <!-- Profile card -->
+      <div class="profile-card" id="profileCard">
+        <div class="profile-card__avatar-wrap">
+          <img class="profile-card__avatar" id="profileAvatar" src="" alt="" width="80" height="80" />
+          <div class="profile-card__avatar-ring" aria-hidden="true"></div>
+        </div>
+        <div class="profile-card__info">
+          <h2 class="profile-card__name"  id="profileName"></h2>
+          <p  class="profile-card__login" id="profileLogin"></p>
+          <p  class="profile-card__bio"   id="profileBio"></p>
+          <div class="profile-card__meta">
+            <span class="meta-chip" id="profileLocation" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1C4.6 1 3 2.6 3 4.5c0 2.7 3.5 7 3.5 7S10 7.2 10 4.5C10 2.6 8.4 1 6.5 1z" stroke="currentColor" stroke-width="1.3"/></svg>
+              <span id="locationText"></span>
+            </span>
+            <span class="meta-chip" id="profileCompany" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="2" y="4" width="9" height="7" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M5 4V3a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1" stroke="currentColor" stroke-width="1.3"/></svg>
+              <span id="companyText"></span>
+            </span>
+            <a class="meta-chip meta-chip--link" id="profileBlog" href="#" target="_blank" rel="noopener" style="display:none">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 7.5a3 3 0 0 0 4 0l1-1a2.1 2.1 0 0 0-3-3L6.5 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M8 5.5a3 3 0 0 0-4 0l-1 1a2.1 2.1 0 0 0 3 3L6.5 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              <span id="blogText"></span>
+            </a>
+          </div>
+        </div>
+        <a class="profile-card__gh-link" id="profileGhLink" href="#" target="_blank" rel="noopener" aria-label="Open on GitHub">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.23.48-2.7-1.07-2.7-1.07-.36-.93-.89-1.17-.89-1.17-.73-.5.05-.49.05-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.87 2.34.67.07-.52.28-.87.51-1.07-1.78-.2-3.65-.89-3.65-3.97 0-.88.31-1.6.83-2.16-.08-.21-.36-1.02.08-2.13 0 0 .67-.22 2.2.82a7.67 7.67 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.11.16 1.92.08 2.13.52.56.83 1.28.83 2.16 0 3.09-1.87 3.77-3.66 3.97.29.25.54.73.54 1.48l-.01 2.19c0 .21.15.46.55.38A8 8 0 0 0 10 2z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Overview stats row -->
+      <div class="stat-row" id="statRow">
+        <div class="stat-card" data-animate>
+          <div class="stat-card__icon stat-card__icon--repos">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="10" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 16h8a2 2 0 0 0 2-2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__val" id="statRepos">0</div>
+            <div class="stat-card__label">Public Repos</div>
+          </div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-card__icon stat-card__icon--stars">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L10 14.4l-4.8 2.5.9-5.4L2.2 7.7l5.4-.8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__val" id="statStars">0</div>
+            <div class="stat-card__label">Total Stars</div>
+          </div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-card__icon stat-card__icon--forks">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="4" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="14" cy="16" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v3M8.3 9.8C7.4 11 6.4 12 6 14M11.7 9.8C12.6 11 13.6 12 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__val" id="statForks">0</div>
+            <div class="stat-card__label">Total Forks</div>
+          </div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-card__icon stat-card__icon--followers">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 17c0-3.3 2.7-6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 11v6M12 14h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__val" id="statFollowers">0</div>
+            <div class="stat-card__label">Followers</div>
+          </div>
+        </div>
+        <div class="stat-card" data-animate>
+          <div class="stat-card__icon stat-card__icon--issues">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M10 6v4M10 13.5v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div class="stat-card__body">
+            <div class="stat-card__val" id="statWatchers">0</div>
+            <div class="stat-card__label">Watchers</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts row -->
+      <div class="charts-row">
+
+        <!-- Top languages donut -->
+        <div class="panel panel--languages">
+          <div class="panel__header">
+            <span class="panel__title">Top Languages</span>
+            <span class="panel__sub" id="langSub"></span>
+          </div>
+          <div class="lang-chart-wrap">
+            <svg class="donut" id="donut" viewBox="0 0 180 180" aria-label="Language distribution donut chart"></svg>
+            <div class="donut-center" id="donutCenter">
+              <span class="donut-center__val" id="donutVal">—</span>
+              <span class="donut-center__lbl">Languages</span>
+            </div>
+          </div>
+          <div class="lang-legend" id="langLegend"></div>
+        </div>
+
+        <!-- Top repos -->
+        <div class="panel panel--repos">
+          <div class="panel__header">
+            <span class="panel__title">Top Repositories</span>
+            <span class="panel__sub">by stars</span>
+          </div>
+          <div class="top-repos" id="topRepos"></div>
+        </div>
+
+      </div>
+
+      <!-- Commit activity heatmap row -->
+      <div class="panel panel--heatmap">
+        <div class="panel__header">
+          <span class="panel__title">Commit Activity</span>
+          <span class="panel__sub" id="heatmapSub">Last 52 weeks</span>
+        </div>
+        <div class="heatmap-scroll">
+          <div class="heatmap" id="heatmap" aria-label="Commit activity heatmap"></div>
+        </div>
+        <div class="heatmap-legend">
+          <span class="heatmap-legend__label">Less</span>
+          <div class="heatmap-legend__cells">
+            <div class="heatmap-cell" data-level="0"></div>
+            <div class="heatmap-cell" data-level="1"></div>
+            <div class="heatmap-cell" data-level="2"></div>
+            <div class="heatmap-cell" data-level="3"></div>
+            <div class="heatmap-cell" data-level="4"></div>
+          </div>
+          <span class="heatmap-legend__label">More</span>
+        </div>
+      </div>
+
+      <!-- Recent repos table -->
+      <div class="panel panel--recent">
+        <div class="panel__header">
+          <span class="panel__title">All Repositories</span>
+          <div class="panel__header-right">
+            <input type="text" class="repo-filter" id="repoFilter" placeholder="Filter repos…" aria-label="Filter repositories"/>
+            <select class="repo-sort" id="repoSort" aria-label="Sort by">
+              <option value="stars">Stars</option>
+              <option value="forks">Forks</option>
+              <option value="updated">Updated</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+        </div>
+        <div class="repo-table-wrap">
+          <table class="repo-table" id="repoTable" aria-label="Repository list">
+            <thead>
+              <tr>
+                <th>Repository</th>
+                <th>Language</th>
+                <th>Stars</th>
+                <th>Forks</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
+            <tbody id="repoTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /.dashboard -->
+
+    <footer class="footer">
+      <span>Built with the GitHub Public API · No auth required</span>
+      <span class="footer__sep">·</span>
+      <span id="rateLimit">API rate limit: checking…</span>
+    </footer>
+
+  </div><!-- /.app -->
+
+  <script src="js/api.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
