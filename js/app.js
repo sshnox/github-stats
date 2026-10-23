@@ -270,11 +270,13 @@ function renderHeatmap(weeklyData) {
   legend.hidden = !hasActivity;
 
   if (!hasActivity) {
+    heatmap.setAttribute('aria-label', 'Commit activity unavailable');
     heatmap.textContent = 'Commit activity isn\'t available for this profile right now.';
     $('heatmapSub').textContent = 'Activity unavailable';
     return;
   }
 
+  heatmap.setAttribute('aria-label', 'Commit activity heatmap');
   Charts.drawHeatmap(heatmap, weeklyData);
   const total = weeklyData.reduce((s, w) => s + w.days.reduce((a, b) => a + b, 0), 0);
   $('heatmapSub').textContent = `${total.toLocaleString()} commits · last 52 weeks`;
