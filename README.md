@@ -1,80 +1,54 @@
-# 📊 DevScope — GitHub Repo Stats Viewer
+# GitHub Stats
 
-> Enter any GitHub username and instantly see a full analytics dashboard: stars, forks, top languages, commit heatmap, and more. No API key required.
+A small, dependency-free dashboard for exploring a GitHub profile through the public GitHub API.
 
-**[Live Demo](https://YOUR_USERNAME.github.io/github-stats)**
+**Live demo:** [sshnox.github.io/github-stats](https://sshnox.github.io/github-stats/)
 
----
+Enter a GitHub username to see profile details, repository totals, language distribution, top repositories, recent commit activity, and a searchable repository table.
 
-## ✨ Features
+## What it shows
 
-- **Profile card** — avatar, bio, location, company, website
-- **Overview stats** — repos, total stars, forks, followers, watchers (animated counters)
-- **Top Languages donut** — animated SVG donut chart with % breakdown
-- **Top Repositories** — ranked cards with stars, forks, language
-- **Commit Activity Heatmap** — 52-week activity grid from real API data
-- **Full Repo Table** — filter + sort by stars / forks / updated / name
-- **URL sharing** — `?user=torvalds` deep links work
-- **API rate limit display** — shows remaining requests
-- **Zero dependencies** — vanilla JS, no npm, no build step
+- Profile name, avatar, bio, location, company, and website
+- Public repository count, total stars, forks, followers, and watchers
+- Language distribution based on repository size
+- Top repositories ranked by stars
+- A 52-week commit activity heatmap from the most-starred repositories
+- Repository filtering and sorting by stars, forks, last update, or name
+- Shareable profile URLs such as `?user=torvalds`
+- Current unauthenticated GitHub API rate-limit status
 
----
+## Run it locally
 
-## 🚀 Deploy to GitHub Pages
+No build step or package manager is required.
 
-1. Extract zip → push to a new GitHub repo
-2. **Settings → Pages → Source: main branch → Save**
-3. Live at: `https://YOUR_USERNAME.github.io/REPO_NAME`
-
-Or open `index.html` directly in any browser — it works locally too.
-
----
-
-## ⚠️ API Rate Limiting
-
-The GitHub Public API allows **60 requests/hour** without authentication.
-
-Each profile load uses ~5-10 requests. To increase to 5000/hour:
-
-1. Create a [GitHub Personal Access Token](https://github.com/settings/tokens) (no scopes needed)
-2. In `js/api.js`, update the headers:
-
-```javascript
-const HEADERS = {
-  Accept: 'application/vnd.github+json',
-  Authorization: 'Bearer YOUR_TOKEN_HERE',
-};
+```bash
+git clone https://github.com/sshnox/github-stats.git
+cd github-stats
+python3 -m http.server 8000
 ```
 
-> Never commit your token to a public repo.
+Open <http://localhost:8000> in your browser. Opening `index.html` directly also works, although a local HTTP server avoids browser restrictions around local files.
 
----
+## GitHub API limits
 
-## 🗂 Project Structure
+The app uses GitHub's unauthenticated public API, which is limited to 60 requests per hour per IP address. A profile load can make several requests because repository and commit activity data are fetched separately.
 
-```
-github-stats/
-├── index.html        ← App shell
-├── css/style.css     ← Obsidian dashboard theme
-├── js/
-│   ├── api.js        ← GitHub API wrapper
-│   ├── charts.js     ← Donut chart + heatmap renderer
-│   └── app.js        ← Main application logic
-└── README.md
-```
+The app does not ask for, store, or require a personal access token. If you fork the project and add authenticated requests, keep credentials on a server or local development environment and never commit them to the repository.
 
----
+## Project structure
 
-## 🔗 URL Params
-
-Link directly to a profile:
-```
-https://YOUR_SITE/?user=torvalds
-https://YOUR_SITE/?user=sindresorhus
+```text
+index.html       App shell and accessible markup
+css/style.css    Layout, theme, and responsive styles
+js/api.js        GitHub API wrapper
+js/charts.js     Language donut and commit heatmap rendering
+js/app.js        Application state and UI rendering
 ```
 
----
+## Contributing
+
+Bug reports, focused improvements, and documentation fixes are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request.
 
 ## License
 
-MIT © 2024
+MIT © Shoaib Shah

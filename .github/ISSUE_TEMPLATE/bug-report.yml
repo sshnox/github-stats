@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible problem in GitHub Stats
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. Please remove usernames or other details you do not want to share.
+  - type: input
+    id: username
+    attributes:
+      label: GitHub username used
+      description: Which public profile reproduced the problem?
+      placeholder: octocat
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Tell us what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Search for ...
+        3. Sort by ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 140
+    validations:
+      required: true

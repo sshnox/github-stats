@@ -51,6 +51,12 @@ window.Charts = (() => {
     svgEl.innerHTML = '';
     legendEl.innerHTML = '';
 
+    if (!langData.length || total === 0) {
+      centerEl.querySelector('.donut-center__val').textContent = '—';
+      if (subEl) subEl.textContent = 'No language data';
+      return;
+    }
+
     // Background circle
     const bg = document.createElementNS(NS, 'circle');
     bg.setAttribute('cx', cx); bg.setAttribute('cy', cy); bg.setAttribute('r', r);

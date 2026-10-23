@@ -285,7 +285,7 @@ function applyTableFilters() {
 
   filtered = filtered.sort((a, b) => {
     if (sort === 'stars')   return b.stargazers_count - a.stargazers_count;
-    if (sort === 'forks')   return b.forks_count - a.stargazers_count;
+    if (sort === 'forks')   return b.forks_count - a.forks_count;
     if (sort === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
     if (sort === 'name')    return a.name.localeCompare(b.name);
     return 0;
